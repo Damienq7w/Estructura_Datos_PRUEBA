@@ -1,3 +1,4 @@
+package Scr_java;
 /**
  * Nodo de la lista circular de oleadas. Solo necesita "siguiente": la
  * circularidad la garantiza ListaCircularOleadas enlazando el último con el primero.
