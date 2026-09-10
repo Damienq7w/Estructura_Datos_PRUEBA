@@ -1,5 +1,4 @@
 package Scr_java;
-
 /**
  * Lista simplemente enlazada circular, con referencia a último, para las
  * oleadas de enemigos. El siguiente del último nodo apunta siempre al
@@ -51,4 +50,4 @@ public class ListaCircularOleadas {
     public void reiniciarCiclo() {
         actual = null;
     }
-}
+

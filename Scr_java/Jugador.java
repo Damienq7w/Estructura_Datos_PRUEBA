@@ -1,3 +1,4 @@
+
 package Scr_java;
 /**
  * Estado del jugador dentro de la partida: únicamente las vidas, que es
@@ -20,4 +21,5 @@ public class Jugador {
     public boolean derrotado() {
         return vidas <= 0;
     }
-}
+
+
