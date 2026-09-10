@@ -1,3 +1,4 @@
+package Scr_java;
 /**
  * Plantilla de una oleada de enemigos: cuántos enemigos genera y con qué
  * atributos base. Es el dato que envuelve cada NodoOleada de ListaCircularOleadas.

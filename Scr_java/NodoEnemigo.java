@@ -1,3 +1,4 @@
+package Scr_java;
 /**
  * Nodo de la lista doblemente enlazada de enemigos activos.
  * Guarda referencias a anterior y siguiente para permitir recorrido bidireccional.
