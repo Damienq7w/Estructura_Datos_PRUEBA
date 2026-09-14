@@ -1,8 +1,4 @@
-/**
- * Lista secuencial (manual, basada en arreglo) para las torres defensivas.
- * Sigue el mismo patrón datos[] + cantidad visto en clase para ListaSecuencial:
- * las posiciones válidas son siempre 0 .. cantidad-1.
- */
+
 public class ListaSecuencialTorres {
 
     private Torre[] datos;
