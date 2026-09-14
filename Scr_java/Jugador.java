@@ -21,5 +21,5 @@ public class Jugador {
     public boolean derrotado() {
         return vidas <= 0;
     }
-
+}
 

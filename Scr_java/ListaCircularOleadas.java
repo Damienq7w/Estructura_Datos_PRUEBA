@@ -51,3 +51,23 @@ public class ListaCircularOleadas {
         actual = null;
     }
 
+    /** Copia defensiva del ciclo en orden de registro (útil para mostrarlo, p. ej. en una interfaz gráfica). */
+    public Oleada[] getOleadasComoArreglo() {
+        Oleada[] copia = new Oleada[tamanio];
+        if (!estaVacia()) {
+            NodoOleada inicio = ultimo.getSiguiente();
+            NodoOleada nodo = inicio;
+            int i = 0;
+            do {
+                copia[i++] = nodo.getOleada();
+                nodo = nodo.getSiguiente();
+            } while (nodo != inicio);
+        }
+        return copia;
+    }
+
+    /** Oleada actualmente en curso (la última que se inició), o null si ninguna ha iniciado todavía. */
+    public Oleada getOleadaActual() {
+        return actual == null ? null : actual.getOleada();
+    }
+}
