@@ -1,3 +1,5 @@
+package Scr_java;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -325,4 +327,4 @@ public class TableroPanel extends JPanel {
         int anchoSub = g2.getFontMetrics().stringWidth(sub);
         g2.drawString(sub, (getWidth() - anchoSub) / 2, getHeight() / 2 + 20);
     }
-}
+
