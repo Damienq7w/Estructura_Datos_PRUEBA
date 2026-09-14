@@ -2,11 +2,6 @@ package Scr_java;
 
 import java.util.Scanner;
 
-/**
- * Menú principal y lógica de simulación del Tower Defense.
- * Integra las tres estructuras obligatorias: ListaSecuencialTorres,
- * ListaDobleEnemigos y ListaCircularOleadas.
- */
 public class TowerDefenseApp {
 
     private static final int LONGITUD_RUTA = 20;
@@ -77,7 +72,7 @@ public class TowerDefenseApp {
 
         Torre t = new Torre(siguienteIdTorre, nombre, tipo, posicion, danio, rango, costo);
         if (torres.insertarTorre(t)) {
-            System.out.println("Torre registrada con id " + siguienteIdTorre + ".");
+            System.out.println("Torre registrada con id " + t.getId() + ".");
             siguienteIdTorre++;
         } else {
             System.out.println("No se pudo registrar la torre (capacidad llena).");
@@ -101,7 +96,7 @@ public class TowerDefenseApp {
 
         Oleada o = new Oleada(siguienteIdOleada, cantidad, tipoEnemigo, vidaBase, velocidadBase);
         oleadas.registrarOleada(o);
-        System.out.println("Oleada registrada con id " + siguienteIdOleada + ".");
+        System.out.println("Oleada registrada con id " + o.getIdOleada() + ".");
         siguienteIdOleada++;
     }
 
@@ -114,18 +109,16 @@ public class TowerDefenseApp {
             System.out.println("No hay oleadas registradas.");
             return;
         }
-
         // La lista es circular: al pasar la última oleada, avanzarSiguienteOleada()
         // vuelve sola a la primera sin necesitar lógica adicional.
         Oleada o = oleadas.avanzarSiguienteOleada();
         oleadasIniciadas++;
         for (int i = 0; i < o.getCantidadEnemigos(); i++) {
-            Enemigo e = new Enemigo(siguienteIdEnemigo++, o.getTipoEnemigo(),
-                    o.getVidaBase(), o.getVelocidadBase(), 0, o.getVidaBase());
+            Enemigo e = new Enemigo(siguienteIdEnemigo, o.getTipoEnemigo(), o.getVidaBase(), o.getVelocidadBase(), 0, o.getVidaBase());
             enemigos.insertarEnemigoAlFinal(e);
+            siguienteIdEnemigo++;
         }
-        System.out.println("Oleada iniciada: " + o);
-        System.out.println(o.getCantidadEnemigos() + " enemigos añadidos al camino.");
+        System.out.println("Oleada iniciada: " + o + " -- " + o.getCantidadEnemigos() + " enemigos añadidos al camino.");
     }
 
     private void avanzarTurno() {
@@ -138,13 +131,16 @@ public class TowerDefenseApp {
             return;
         }
 
-        StringBuilder resumen = new StringBuilder();
+        System.out.println("\n--- RESUMEN DEL TURNO ---");
+        int ataques = 0;
+        int destruidos = 0;
+        int vidasPerdidas = 0;
+        boolean huboEventos = false;
 
         // 1. Mover todos los enemigos según su velocidad.
         enemigos.actualizarPosicionEnCadaTurno();
 
         // 2 y 3. Verificar rango de cada torre y aplicar el daño correspondiente.
-        int ataques = 0;
         for (Torre t : torres.getTorres()) {
             NodoEnemigo actual = enemigos.getPrimero();
             while (actual != null) {
@@ -152,53 +148,56 @@ public class TowerDefenseApp {
                 if (!e.estaDestruido() && t.enRango(e.getPosicion())) {
                     e.recibirDanio(t.getDanio());
                     ataques++;
-                    resumen.append("  Torre #").append(t.getId()).append(" (").append(t.getNombre())
-                            .append(") ataca a enemigo #").append(e.getId())
-                            .append(" -> vida restante: ").append(e.getVida()).append("\n");
+                    huboEventos = true;
+                    System.out.println("  Torre #" + t.getId() + " (" + t.getNombre()
+                            + ") ataca a enemigo #" + e.getId() + " -> vida restante: " + e.getVida());
                 }
                 actual = actual.getSiguiente();
             }
         }
 
         // 4. Eliminar de la lista los enemigos cuya vida llegó a 0.
-        int destruidos = 0;
         NodoEnemigo nodo = enemigos.getPrimero();
         while (nodo != null) {
             NodoEnemigo siguiente = nodo.getSiguiente();
             if (nodo.getEnemigo().estaDestruido()) {
-                resumen.append("  Enemigo #").append(nodo.getEnemigo().getId()).append(" destruido.\n");
+                System.out.println("  Enemigo #" + nodo.getEnemigo().getId() + " destruido.");
                 enemigos.eliminarEnemigoDestruido(nodo.getEnemigo().getId());
                 destruidos++;
+                huboEventos = true;
             }
             nodo = siguiente;
         }
 
         // 5. Descontar vidas al jugador si un enemigo alcanzó el final del camino.
-        int vidasPerdidas = 0;
         nodo = enemigos.getPrimero();
         while (nodo != null) {
             NodoEnemigo siguiente = nodo.getSiguiente();
             if (nodo.getEnemigo().getPosicion() >= LONGITUD_RUTA) {
                 jugador.perderVida();
                 vidasPerdidas++;
-                resumen.append("  Enemigo #").append(nodo.getEnemigo().getId())
-                        .append(" llegó a la base. Vidas restantes: ").append(jugador.getVidas()).append("\n");
+                huboEventos = true;
+                System.out.println("  Enemigo #" + nodo.getEnemigo().getId()
+                        + " llegó a la base. Vidas restantes: " + jugador.getVidas());
                 enemigos.eliminarEnemigoDestruido(nodo.getEnemigo().getId());
             }
             nodo = siguiente;
         }
 
-        // 6. Mostrar un resumen del turno ejecutado.
-        System.out.println("\n--- RESUMEN DEL TURNO ---");
-        if (resumen.length() == 0) {
+        if (!huboEventos) {
             System.out.println("  Los enemigos avanzaron, sin ataques ni bajas este turno.");
-        } else {
-            System.out.print(resumen);
         }
         System.out.println("Ataques: " + ataques + " | Enemigos destruidos: " + destruidos
                 + " | Vidas perdidas: " + vidasPerdidas);
 
         verificarFinDePartida();
+        if (juegoTerminado) {
+            if (victoria) {
+                System.out.println("\n*** ¡Todas las oleadas fueron completadas! Victoria. ***");
+            } else {
+                System.out.println("\n*** El jugador perdió todas sus vidas. Fin del juego. ***");
+            }
+        }
     }
 
     private void mostrarEnemigosActivos() {
@@ -219,7 +218,8 @@ public class TowerDefenseApp {
         System.out.println("Vidas del jugador: " + jugador.getVidas());
         System.out.println("Torres activas: " + torres.contarTorresActivas());
         System.out.println("Enemigos activos: " + enemigos.tamanio());
-        System.out.println("Oleadas registradas: " + oleadas.tamanio() + " | Oleadas iniciadas: " + oleadasIniciadas);
+        System.out.println("Oleadas registradas: " + oleadas.tamanio()
+                + " | Oleadas iniciadas: " + oleadasIniciadas);
         if (juegoTerminado) {
             System.out.println("Resultado: " + (victoria ? "VICTORIA" : "DERROTA"));
         } else {
@@ -227,17 +227,13 @@ public class TowerDefenseApp {
         }
     }
 
-    // ---------- Lógica de fin de partida ----------
-
     private void verificarFinDePartida() {
         if (jugador.derrotado()) {
             juegoTerminado = true;
             victoria = false;
-            System.out.println("\n*** El jugador perdió todas sus vidas. Fin del juego. ***");
         } else if (oleadas.tamanio() > 0 && oleadasIniciadas >= oleadas.tamanio() && enemigos.estaVacia()) {
             juegoTerminado = true;
             victoria = true;
-            System.out.println("\n*** ¡Todas las oleadas fueron completadas! Victoria. ***");
         }
     }
 
@@ -293,4 +289,3 @@ public class TowerDefenseApp {
         }
     }
 }
-

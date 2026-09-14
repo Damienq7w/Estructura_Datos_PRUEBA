@@ -1,9 +1,5 @@
 package Scr_java;
 
-/**
- * Estructura defensiva colocada por el jugador.
- * Es el elemento que almacena ListaSecuencialTorres.
- */
 public class Torre {
 
     private int id;
@@ -43,4 +39,3 @@ public class Torre {
                 + " danio=" + danio + " rango=" + rango + " costo=" + costo;
     }
 }
-
