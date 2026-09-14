@@ -1,4 +1,3 @@
-package Scr_java;
 
 /**
  * Punto de entrada alterno. El método main exigido por el enunciado está en
