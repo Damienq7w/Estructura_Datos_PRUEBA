@@ -2,6 +2,8 @@
 
 # Tower Defense — Estructura de Datos (Java)
 
+# Grupo - 04
+
 Prueba práctica de Estructura de Datos (UTA): simulador Tower Defense con las tres
 estructuras exigidas, implementadas manualmente (sin `java.util`).
 
