@@ -1,4 +1,3 @@
-
 public class ListaSecuencialTorres {
 
     private Torre[] datos;
