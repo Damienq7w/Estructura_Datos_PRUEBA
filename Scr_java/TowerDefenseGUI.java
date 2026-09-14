@@ -78,7 +78,10 @@ public class TowerDefenseGUI extends JFrame {
         double posicionVisual;
         int vidaMax;
     }
-    private final EstadoAnimEnemigo[] animEnemigos = new EstadoAnimEnemigo[200];
+    // Los dos arreglos crecen al duplicar su capacidad cuando se llenan: lanzando
+    // los 20 niveles iniciales se pueden generar 280 enemigos (y "+ nivel extra" no
+    // tiene tope), así que una capacidad fija dejaba enemigos sin animación.
+    private EstadoAnimEnemigo[] animEnemigos = new EstadoAnimEnemigo[200];
     private int animCantidad = 0;
 
     private static final class Efecto {
@@ -87,7 +90,7 @@ public class TowerDefenseGUI extends JFrame {
         long expiraEn;
         long duracionMs;
     }
-    private final Efecto[] efectos = new Efecto[100];
+    private Efecto[] efectos = new Efecto[100];
     private int efectosCantidad = 0;
 
     // ---------- Componentes ----------
@@ -380,7 +383,7 @@ public class TowerDefenseGUI extends JFrame {
 
     /** Solo el Mago ataca en área; el resto de torres son de objetivo único. */
     private static boolean esAreaDeEfecto(String tipo) {
-        return "Mago".equalsIgnoreCase(tipo);
+        return ReglasJuego.esAreaDeEfecto(tipo);
     }
 
     /**
@@ -432,7 +435,7 @@ public class TowerDefenseGUI extends JFrame {
         Oleada o = oleadas.avanzarSiguienteOleada();
         oleadasIniciadas++;
         for (int i = 0; i < o.getCantidadEnemigos(); i++) {
-            int recompensa = Math.max(5, o.getVidaBase() / 4);
+            int recompensa = ReglasJuego.recompensaPorEnemigo(o);
             Enemigo e = new Enemigo(siguienteIdEnemigo, o.getTipoEnemigo(), o.getVidaBase(), o.getVelocidadBase(), 0, recompensa);
             enemigos.insertarEnemigoAlFinal(e);
             siguienteIdEnemigo++;
@@ -466,7 +469,7 @@ public class TowerDefenseGUI extends JFrame {
         // rango (área); el resto solo al enemigo más avanzado dentro de su rango (objetivo
         // único), como se esperaría de un Arquero o un Cañón reales.
         for (Torre t : torres.getTorres()) {
-            if (esAreaDeEfecto(t.getTipo())) {
+            if (t.esAreaDeEfecto()) {
                 NodoEnemigo actual = enemigos.getPrimero();
                 while (actual != null) {
                     Enemigo e = actual.getEnemigo();
@@ -488,6 +491,7 @@ public class TowerDefenseGUI extends JFrame {
         }
 
         // 4. Eliminar de la lista los enemigos cuya vida llegó a 0.
+        // Ya tenemos el nodo del recorrido, así que se desengancha en O(1).
         NodoEnemigo nodo = enemigos.getPrimero();
         while (nodo != null) {
             NodoEnemigo siguiente = nodo.getSiguiente();
@@ -496,7 +500,7 @@ public class TowerDefenseGUI extends JFrame {
                 agregarEfecto(1, e.getPosicion(), e.getPosicion(), 420);
                 oro += e.getRecompensa();
                 escribirLog("Enemigo #" + e.getId() + " destruido (+" + e.getRecompensa() + " de oro).");
-                enemigos.eliminarEnemigoDestruido(e.getId());
+                enemigos.eliminarNodo(nodo);
                 destruidos++;
                 huboEventos = true;
             }
@@ -513,7 +517,7 @@ public class TowerDefenseGUI extends JFrame {
                 huboEventos = true;
                 agregarEfecto(2, LONGITUD_RUTA, LONGITUD_RUTA, 500);
                 escribirLog("Enemigo #" + nodo.getEnemigo().getId() + " llegó a la base. Vidas restantes: " + jugador.getVidas());
-                enemigos.eliminarEnemigoDestruido(nodo.getEnemigo().getId());
+                enemigos.eliminarNodo(nodo);
             }
             nodo = siguiente;
         }
@@ -558,10 +562,10 @@ public class TowerDefenseGUI extends JFrame {
     }
 
     private void verificarFinDePartida() {
-        if (jugador.derrotado()) {
+        if (ReglasJuego.esDerrota(jugador)) {
             juegoTerminado = true;
             victoria = false;
-        } else if (oleadas.tamanio() > 0 && oleadasIniciadas >= oleadas.tamanio() && enemigos.estaVacia()) {
+        } else if (ReglasJuego.esVictoria(oleadas, oleadasIniciadas, enemigos)) {
             juegoTerminado = true;
             victoria = true;
         }
@@ -618,9 +622,12 @@ public class TowerDefenseGUI extends JFrame {
         nuevo.id = id;
         nuevo.posicionVisual = 0;
         nuevo.vidaMax = vidaActual;
-        if (animCantidad < animEnemigos.length) {
-            animEnemigos[animCantidad++] = nuevo;
+        if (animCantidad == animEnemigos.length) {
+            EstadoAnimEnemigo[] mayor = new EstadoAnimEnemigo[animEnemigos.length * 2];
+            System.arraycopy(animEnemigos, 0, mayor, 0, animCantidad);
+            animEnemigos = mayor;
         }
+        animEnemigos[animCantidad++] = nuevo;
         return nuevo;
     }
 
@@ -637,7 +644,11 @@ public class TowerDefenseGUI extends JFrame {
     }
 
     private void agregarEfecto(int tipo, double x1, double x2, long duracionMs) {
-        if (efectosCantidad >= efectos.length) return;
+        if (efectosCantidad == efectos.length) {
+            Efecto[] mayor = new Efecto[efectos.length * 2];
+            System.arraycopy(efectos, 0, mayor, 0, efectosCantidad);
+            efectos = mayor;
+        }
         Efecto ef = new Efecto();
         ef.tipo = tipo;
         ef.x1 = x1;

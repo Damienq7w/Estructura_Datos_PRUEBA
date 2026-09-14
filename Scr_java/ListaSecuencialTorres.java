@@ -1,3 +1,5 @@
+package Scr_java;
+
 public class ListaSecuencialTorres {
 
     private Torre[] datos;

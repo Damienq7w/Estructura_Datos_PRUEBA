@@ -12,21 +12,26 @@ estructuras exigidas, implementadas manualmente (sin `java.util`).
 ```
 Estructura_Datos_PRUEBA/
 ├── Capturas_Ejecucion/
-│   └── ejemplo                    → capturas de pantalla de la ejecución
+│   └── ejemplo                     → capturas de pantalla de la ejecución
 ├── Diagrama de clases/
-│   └── Diagrama UML del Examen    → diagrama de clases del proyecto
-├── Scr_java/                      → código fuente (.java)
+│   ├── Diagrama UML del Examen     → diagrama de clases del proyecto (editable)
+│   └── Diagrama_Del_Examen.png     → diagrama de clases exportado como imagen
+├── Documento/
+│   └── Documentacion_Examen.pdf    → informe y documentación escrita del examen
+├── Scr_java/                       → código fuente (.java)
 │   ├── Enemigo.java
 │   ├── Jugador.java
 │   ├── ListaCircularOleadas.java
 │   ├── ListaDobleEnemigos.java
-│   ├── ListaSecuencialesTorres.java
+│   ├── ListaSecuencialTorres.java
 │   ├── Main.java
 │   ├── NodoEnemigo.java
 │   ├── NodoOleada.java
 │   ├── Oleada.java
+│   ├── TableroPanel.java           → dibuja el tablero de la interfaz gráfica opcional
 │   ├── Torre.java
-│   └── TowerDefenseApp.java
+│   ├── TowerDefenseApp.java        → menú de consola (obligatorio, tiene el `main`)
+│   └── TowerDefenseGUI.java        → interfaz gráfica opcional (Swing, tablero animado)
 ├── .gitignore
 └── README.md
 ```

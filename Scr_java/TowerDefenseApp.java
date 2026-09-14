@@ -114,7 +114,8 @@ public class TowerDefenseApp {
         Oleada o = oleadas.avanzarSiguienteOleada();
         oleadasIniciadas++;
         for (int i = 0; i < o.getCantidadEnemigos(); i++) {
-            Enemigo e = new Enemigo(siguienteIdEnemigo, o.getTipoEnemigo(), o.getVidaBase(), o.getVelocidadBase(), 0, o.getVidaBase());
+            int recompensa = ReglasJuego.recompensaPorEnemigo(o);
+            Enemigo e = new Enemigo(siguienteIdEnemigo, o.getTipoEnemigo(), o.getVidaBase(), o.getVelocidadBase(), 0, recompensa);
             enemigos.insertarEnemigoAlFinal(e);
             siguienteIdEnemigo++;
         }
@@ -141,28 +142,38 @@ public class TowerDefenseApp {
         enemigos.actualizarPosicionEnCadaTurno();
 
         // 2 y 3. Verificar rango de cada torre y aplicar el daño correspondiente.
+        // El Mago daña a todos los enemigos en su rango (área); Arquero y Cañón solo
+        // al más avanzado (objetivo único). Misma regla que usa la ventana.
         for (Torre t : torres.getTorres()) {
-            NodoEnemigo actual = enemigos.getPrimero();
-            while (actual != null) {
-                Enemigo e = actual.getEnemigo();
-                if (!e.estaDestruido() && t.enRango(e.getPosicion())) {
-                    e.recibirDanio(t.getDanio());
+            if (t.esAreaDeEfecto()) {
+                NodoEnemigo actual = enemigos.getPrimero();
+                while (actual != null) {
+                    Enemigo e = actual.getEnemigo();
+                    if (!e.estaDestruido() && t.enRango(e.getPosicion())) {
+                        atacar(t, e);
+                        ataques++;
+                        huboEventos = true;
+                    }
+                    actual = actual.getSiguiente();
+                }
+            } else {
+                Enemigo objetivo = enemigoMasAvanzadoEnRango(t);
+                if (objetivo != null) {
+                    atacar(t, objetivo);
                     ataques++;
                     huboEventos = true;
-                    System.out.println("  Torre #" + t.getId() + " (" + t.getNombre()
-                            + ") ataca a enemigo #" + e.getId() + " -> vida restante: " + e.getVida());
                 }
-                actual = actual.getSiguiente();
             }
         }
 
         // 4. Eliminar de la lista los enemigos cuya vida llegó a 0.
+        // Ya tenemos el nodo del recorrido, así que se desengancha en O(1).
         NodoEnemigo nodo = enemigos.getPrimero();
         while (nodo != null) {
             NodoEnemigo siguiente = nodo.getSiguiente();
             if (nodo.getEnemigo().estaDestruido()) {
                 System.out.println("  Enemigo #" + nodo.getEnemigo().getId() + " destruido.");
-                enemigos.eliminarEnemigoDestruido(nodo.getEnemigo().getId());
+                enemigos.eliminarNodo(nodo);
                 destruidos++;
                 huboEventos = true;
             }
@@ -179,7 +190,7 @@ public class TowerDefenseApp {
                 huboEventos = true;
                 System.out.println("  Enemigo #" + nodo.getEnemigo().getId()
                         + " llegó a la base. Vidas restantes: " + jugador.getVidas());
-                enemigos.eliminarEnemigoDestruido(nodo.getEnemigo().getId());
+                enemigos.eliminarNodo(nodo);
             }
             nodo = siguiente;
         }
@@ -227,11 +238,34 @@ public class TowerDefenseApp {
         }
     }
 
+    /** Aplica el daño de una torre a un enemigo y lo reporta en pantalla. */
+    private void atacar(Torre t, Enemigo e) {
+        e.recibirDanio(t.getDanio());
+        System.out.println("  Torre #" + t.getId() + " (" + t.getNombre()
+                + ") ataca a enemigo #" + e.getId() + " -> vida restante: " + e.getVida());
+    }
+
+    /** Enemigo más avanzado (mayor posición) dentro del rango de la torre, o null si ninguno. */
+    private Enemigo enemigoMasAvanzadoEnRango(Torre t) {
+        Enemigo objetivo = null;
+        NodoEnemigo actual = enemigos.getPrimero();
+        while (actual != null) {
+            Enemigo e = actual.getEnemigo();
+            if (!e.estaDestruido() && t.enRango(e.getPosicion())) {
+                if (objetivo == null || e.getPosicion() > objetivo.getPosicion()) {
+                    objetivo = e;
+                }
+            }
+            actual = actual.getSiguiente();
+        }
+        return objetivo;
+    }
+
     private void verificarFinDePartida() {
-        if (jugador.derrotado()) {
+        if (ReglasJuego.esDerrota(jugador)) {
             juegoTerminado = true;
             victoria = false;
-        } else if (oleadas.tamanio() > 0 && oleadasIniciadas >= oleadas.tamanio() && enemigos.estaVacia()) {
+        } else if (ReglasJuego.esVictoria(oleadas, oleadasIniciadas, enemigos)) {
             juegoTerminado = true;
             victoria = true;
         }
