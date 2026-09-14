@@ -5,68 +5,86 @@
 # Grupo - 04
 
 Prueba práctica de Estructura de Datos (UTA): simulador Tower Defense con las tres
-estructuras exigidas, implementadas manualmente (sin `java.util`).
+estructuras exigidas, implementadas manualmente (sin colecciones de `java.util`).
 
 ## Estructura del repositorio
 
 ```
 Estructura_Datos_PRUEBA/
+├── .vscode/
+│   └── settings.json                    → indica a VS Code que el código fuente empieza en TowerDefense/
 ├── Capturas_Ejecucion/
-│   └── ejemplo                     → capturas de pantalla de la ejecución
+│   ├── Ejecucion_01.jpeg                → capturas de pantalla de la ejecución
+│   ├── Ejecucion_02.jpeg
+│   └── tablero_gui.png                  → captura de la interfaz gráfica opcional
 ├── Diagrama de clases/
-│   ├── Diagrama UML del Examen     → diagrama de clases del proyecto (editable)
-│   └── Diagrama_Del_Examen.png     → diagrama de clases exportado como imagen
+│   └── Diagrama de Clases.png           → diagrama de clases del proyecto
 ├── Documento/
-│   └── Documentacion_Examen.pdf    → informe y documentación escrita del examen
-├── Scr_java/                       → código fuente (.java)
-│   ├── Enemigo.java
-│   ├── Jugador.java
-│   ├── ListaCircularOleadas.java
-│   ├── ListaDobleEnemigos.java
-│   ├── ListaSecuencialTorres.java
-│   ├── Main.java
-│   ├── NodoEnemigo.java
-│   ├── NodoOleada.java
-│   ├── Oleada.java
-│   ├── TableroPanel.java           → dibuja el tablero de la interfaz gráfica opcional
-│   ├── Torre.java
-│   ├── TowerDefenseApp.java        → menú de consola (obligatorio, tiene el `main`)
-│   └── TowerDefenseGUI.java        → interfaz gráfica opcional (Swing, tablero animado)
+│   └── Documentacion_Examen.pdf         → informe y documentación escrita del examen
+├── TowerDefense/
+│   └── Scr_java/                        → código fuente (.java), paquete `Scr_java`
+│       ├── Enemigo.java
+│       ├── Jugador.java
+│       ├── ListaCircularOleadas.java
+│       ├── ListaDobleEnemigos.java
+│       ├── ListaSecuencialTorres.java
+│       ├── Main.java                   → menú de consola
+│       ├── NodoEnemigo.java
+│       ├── NodoOleada.java
+│       ├── Oleada.java
+│       ├── ReglasJuego.java             → reglas compartidas por la consola y la interfaz gráfica
+│       ├── TableroPanel.java            → dibuja el tablero de la interfaz gráfica
+│       ├── Torre.java
+│       ├── TowerDefenseApp.java         
+│       └── TowerDefenseGUI.java         → interfaz gráfica (Swing, tablero animado)
+├── TrabajoEnEquipoPruebas/              → evidencia del trabajo en equipo en GitHub
+│   ├── Evidencia_GitHub_cunalata.docx   
+│   ├── Evidencia_GitHub_tisalema.docx
+│   ├── Evidencia_GitHub_silva.docx
+│   ├── Evidencia_GitHub_chalco.docx
+│   └── Evidencia_GitHub_camacho.docx
 ├── .gitignore
 └── README.md
 ```
 
-> Nota: Java exige que el nombre de la clase pública coincida exactamente con el nombre del
-> archivo. Si `ListaSecuencialesTorres.java` se subió con la clase todavía declarada como
-> `ListaSecuencialTorres`, no va a compilar — hay que igualar uno de los dos nombres.
-
 ## Compilar y ejecutar
 
+Todas las clases pertenecen al paquete `Scr_java`, por eso se compila y ejecuta desde la
+carpeta `TowerDefense` usando el nombre completo de la clase:
+
 ```bash
-cd Scr_java
-javac *.java -d ../bin
-java -cp ../bin TowerDefenseApp
+cd TowerDefense
+javac -encoding UTF-8 -d bin Scr_java/*.java
+java -cp bin Scr_java.TowerDefenseApp     # menú de consola
+java -cp bin Scr_java.TowerDefenseGUI     # interfaz gráfica opcional
 ```
 
 `Main.java` es un punto de entrada alterno: solo invoca `TowerDefenseApp.main()`, por si el
-entorno de ejecución espera una clase `Main` (`java -cp ../bin Main`). El `main` exigido por
-el enunciado sigue estando en `TowerDefenseApp`.
+entorno de ejecución espera una clase `Main` (`java -cp bin Scr_java.Main`). El `main` exigido
+por el enunciado sigue estando en `TowerDefenseApp`.
+
+### Desde VS Code
+
+Abrir la carpeta `Estructura_Datos_PRUEBA` completa. El archivo `.vscode/settings.json` le indica
+a VS Code que el código fuente empieza en `TowerDefense/`, así el paquete `Scr_java` coincide con
+su carpeta y las clases se compilan en `TowerDefense/bin`. Si al ejecutar aparece
+`ClassNotFoundException`, usar `Ctrl+Shift+P` → **Java: Force Java Compilation** → **Full** y
+volver a ejecutar.
 
 ## Reparto del equipo (6 integrantes)
 
-| Integrante                        | Rol                         | A cargo de                                                                                                                                                               |
-| --------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Cunalata Mendoza Damian Alexander | Líder técnico e integración | `TowerDefenseApp` (menú + lógica de "avanzar turno") + `Main`, `Jugador`, `ListaCircularOleadas` + `NodoOleada` + `Oleada`, compilación final y prueba del caso sugerido |
-| Chalco Tasna Kenneth Mateo        | Desarrollo                  | `Torre` + `ListaSecuencialTorres` (insertar, eliminar, buscar, mostrar, contar)                                                                                          |
-| Tacuri Santillan Mónica Sara      | Desarrollo                  | `Torre` + `ListaSecuencialTorres`: (lista vacía, llena, id repetido (la integrante no llegó a tiempo y no realizó su parte))                                             |
-| Tisalema Guashco Darwin Joel      | Desarrollo                  | `Enemigo` + `NodoEnemigo` + `ListaDobleEnemigos` (insertar, eliminar, buscar, recorridos, actualización de posición)                                                     |
-| Silva Camuendo Luis Alexander     | Desarrollo                  | `Enemigo` + `NodoEnemigo` + `ListaDobleEnemigos`: (lista vacía, un nodo, cabeza/cola)                                                                                    |
-| Camacho Monta Josue Jampier       | Documentación               | Este README (generación y mantenimiento), diagrama de clases, explicación de cada estructura, capturas de pantalla de la ejecución                                       |
+| Integrante                        | Rol                         | Clases a cargo                                                                                                                                                                                       | Rama              |
+| --------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| Cunalata Mendoza Damian Alexander | Líder técnico e integración | `Torre`, `TowerDefenseApp` (menú de consola y lógica de "avanzar turno") y `TowerDefenseGUI` (interfaz gráfica opcional); integración de las tres estructuras, compilación final y prueba del caso sugerido | `Damian_Cunalata` |
+| Tisalema Guashco Darwin Joel      | Desarrollo                  | `ListaSecuencialTorres` (insertar, eliminar por id, buscar, mostrar y contar torres activas), `Main` y `NodoEnemigo`                                                                                  | `Rama-Joel`       |
+| Silva Camuendo Luis Alexander     | Desarrollo                  | `NodoOleada`, `Oleada` y `TableroPanel` (panel Swing que dibuja el camino, las torres, los enemigos y los efectos de combate)                                                                        | `Rama-Luis-Silva` |
+| Chalco Tasna Kenneth Mateo        | Desarrollo                  | `Enemigo` (avanzar, recibir daño, destrucción), `Jugador` (vidas, derrota), `ListaCircularOleadas` (registrar, avanzar y reiniciar el ciclo) y `ListaDobleEnemigos` (insertar, buscar por id, eliminar y recorrido bidireccional) | `Mateo-Chalco`    |
+| Camacho Monta Josue Jampier       | Documentación               | Este README (generación y mantenimiento), diagrama de clases, explicación de cada estructura y capturas de pantalla de la ejecución                                                                  | `rama---Josue`    |
+| Tacuri Santillan Mónica Sara      | Desarrollo (no completado)  | Tenía asignadas las validaciones de `ListaSecuencialTorres` (lista vacía, llena, id repetido), pero no llegó a tiempo a la prueba práctica y no realizó su parte, por lo que no registra commits    | —                 |
 
-Cada pareja de desarrollo cubre su propia estructura de punta a punta (código + pruebas);
-el líder integra todo en `TowerDefenseApp` y valida que el caso de prueba sugerido funcione
-antes de la entrega; Josue documenta el proyecto completo en este mismo README, incluido
-el diagrama de clases.
+Cada integrante desarrolló sus clases en su propia rama y las subió al repositorio; el líder
+integró todo en `main` a través de `TowerDefenseApp` y validó que el caso de prueba sugerido
+funcione antes de la entrega; Josue documentó el proyecto completo en este mismo README.
 
 ## Breve explicación del uso de cada estructura de datos
 
@@ -114,38 +132,6 @@ empezar desde la primera oleada registrada. Se eligió esta estructura porque la
 repiten en ciclo por diseño del juego, y la circularidad evita tener que programar aparte la
 lógica de "volver al inicio" cuando se termina la última oleada.
 
-## Diagrama de clases
-
-```mermaid
-classDiagram
-    class Torre
-    class Enemigo
-    class Oleada
-    class Jugador
-    class NodoEnemigo
-    class NodoOleada
-    class ListaSecuencialTorres
-    class ListaDobleEnemigos
-    class ListaCircularOleadas
-    class TowerDefenseApp
-    class Main
-
-    ListaSecuencialTorres "1" o-- "0..*" Torre : arreglo datos[]
-    ListaDobleEnemigos "1" o-- "0..*" NodoEnemigo : primero/ultimo
-    NodoEnemigo "1" --> "1" Enemigo
-    NodoEnemigo "1" --> "0..1" NodoEnemigo : anterior/siguiente
-    ListaCircularOleadas "1" o-- "0..*" NodoOleada : ultimo (circular)
-    NodoOleada "1" --> "1" Oleada
-    NodoOleada "1" --> "1" NodoOleada : siguiente
-    TowerDefenseApp --> ListaSecuencialTorres
-    TowerDefenseApp --> ListaDobleEnemigos
-    TowerDefenseApp --> ListaCircularOleadas
-    TowerDefenseApp --> Jugador
-    Main --> TowerDefenseApp
-```
-
-El diagrama UML entregado como imagen está en `Diagrama de clases/Diagrama UML del Examen`.
-
 ## Lógica de "Avanzar turno" (opción 7)
 
 1. Mueve enemigos según su velocidad.
@@ -165,14 +151,15 @@ tres enemigos básicos en el turno 3 (50 → 30 → 10 → 0), sin pérdida de v
 
 ## Checklist de entregables
 
-- [x] Archivos `.java` compilables y ejecutables — carpeta `Scr_java/`.
+- [x] Archivos `.java` compilables y ejecutables — carpeta `TowerDefense/Scr_java/` — **Damian, Joel, Luis y Mateo**.
 - [x] Capturas de pantalla de la ejecución — carpeta `Capturas_Ejecucion/` — **Josue**.
 - [x] Explicación breve de cada estructura (arriba) — **Josue**.
-- [x] Diagrama de clases (arriba y en `Diagrama de clases/`) — **Josue**.
-- [ ] Invitar al docente (`joseru82@hotmail.com`) como colaborador del repositorio — **Damian**.
+- [x] Diagrama de clases — carpeta `Diagrama de clases/` — **Josue**.
+- [x] Invitar al docente (`joseru82@hotmail.com`) como colaborador del repositorio — **Damian**.
 
 ## Restricciones respetadas
 
-Sin `ArrayList`, `LinkedList`, `Queue`, `Deque` ni colecciones de `java.util`. Listas
-implementadas manualmente con arreglos y referencias entre objetos. Clases separadas en
-archivos `.java`, con `TowerDefenseApp` conteniendo `main`.
+Sin `ArrayList`, `LinkedList`, `Queue`, `Deque` ni colecciones de `java.util` (de ese paquete
+solo se usa `Scanner` para leer el teclado). Listas implementadas manualmente con arreglos y
+referencias entre objetos. Clases separadas en archivos `.java`, con `TowerDefenseApp`
+conteniendo `main`.
