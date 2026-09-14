@@ -36,9 +36,13 @@ public class ListaDobleEnemigos {
         return null;
     }
 
-    /** Elimina de la lista al enemigo destruido (o que llegó al final del camino) con ese id. */
-    public boolean eliminarEnemigoDestruido(int id) {
-        NodoEnemigo nodo = buscarEnemigoPorId(id);
+    /**
+     * Desengancha un nodo que el llamador ya tiene localizado. Esta es la operación
+     * O(1) que justifica usar una lista doblemente enlazada: como el nodo conoce a
+     * su anterior y a su siguiente, no hay que recorrer la lista ni desplazar
+     * elementos como habría que hacer en un arreglo.
+     */
+    public boolean eliminarNodo(NodoEnemigo nodo) {
         if (nodo == null) return false;
         NodoEnemigo ant = nodo.getAnterior();
         NodoEnemigo sig = nodo.getSiguiente();
@@ -46,6 +50,15 @@ public class ListaDobleEnemigos {
         if (sig != null) sig.setAnterior(ant); else ultimo = ant;
         tamanio--;
         return true;
+    }
+
+    /**
+     * Elimina al enemigo destruido (o que llegó al final del camino) con ese id.
+     * Su costo O(n) viene de la búsqueda, no del borrado: quien ya tenga el nodo
+     * en la mano debe llamar a eliminarNodo() y la eliminación queda en O(1).
+     */
+    public boolean eliminarEnemigoDestruido(int id) {
+        return eliminarNodo(buscarEnemigoPorId(id));
     }
 
     public void recorrerHaciaAdelante() {

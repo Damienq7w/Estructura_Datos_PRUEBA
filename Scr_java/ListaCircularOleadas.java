@@ -51,3 +51,26 @@ public class ListaCircularOleadas {
         actual = null;
     }
 
+    /** Oleada a la que apunta el ciclo ahora mismo, o null si todavía no se inició ninguna. */
+    public Oleada getOleadaActual() {
+        return (actual == null) ? null : actual.getOleada();
+    }
+
+    /**
+     * Copia del ciclo como arreglo, en el orden en que se registraron las oleadas
+     * (índice 0 = primera registrada). Recorre el ciclo una sola vuelta, así que
+     * sirve para consultarlo sin mover el puntero actual ni exponer los nodos.
+     */
+    public Oleada[] getOleadasComoArreglo() {
+        Oleada[] arreglo = new Oleada[tamanio];
+        if (estaVacia()) return arreglo;
+        NodoOleada inicio = ultimo.getSiguiente();
+        NodoOleada nodo = inicio;
+        int i = 0;
+        do {
+            arreglo[i++] = nodo.getOleada();
+            nodo = nodo.getSiguiente();
+        } while (nodo != inicio);
+        return arreglo;
+    }
+}

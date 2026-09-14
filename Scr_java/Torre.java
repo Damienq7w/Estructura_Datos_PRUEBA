@@ -33,6 +33,15 @@ public class Torre {
         return Math.abs(posicionEnemigo - posicion) <= rango;
     }
 
+    /**
+     * Indica si la torre golpea a la vez a todos los enemigos en su rango (área) o
+     * solo a uno (objetivo único). La regla vive en ReglasJuego para que la consola
+     * y la ventana ataquen igual.
+     */
+    public boolean esAreaDeEfecto() {
+        return ReglasJuego.esAreaDeEfecto(tipo);
+    }
+
     @Override
     public String toString() {
         return "Torre #" + id + " [" + nombre + " - " + tipo + "] pos=" + posicion
